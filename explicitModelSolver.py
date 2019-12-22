@@ -10,11 +10,18 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+<<<<<<< HEAD
 
 class fullModelSolver():
     def __init__(self, paramsList=[1.2, .5, .5, 1, 4e-5, 70, 12.5, 1, 1e-4],
                  domainSizeList=[0, 1, 25],
                  dt=0.1, dx=0.01, stabiliseSpatDiscB=False):
+=======
+class fullModelSolver():
+    def __init__(self, paramsList=[1.2, .5, .5, 1, 4e-5, 70, 12.5, 1, 1e-4],
+                 domainSizeList=[0, 1, 25],
+                 dt=0.1, dx=0.01):
+>>>>>>> 2a4c056fe7870a93e085c154ae63e541b6ea3e25
 
         # Parameterise Equation
         self.cS = paramsList[0]  # Inhibition Stroma -> Tumour
@@ -47,6 +54,7 @@ class fullModelSolver():
         self.xVec = np.linspace(self.xMin, self.xMax, self.nGrdPts)
         self.loggedTimeVec = np.linspace(0, self.tEnd, self.nTimeSteps)
 
+<<<<<<< HEAD
         # In order to stabilise the numerics we can multiply the growth terms through
         # by the sign of the variable. This helps to overcome spurious oscillations.
         # Turn this on or off here:
@@ -55,6 +63,8 @@ class fullModelSolver():
         else:
             self.SpatiallyDiscretisedSystem = self.SpatiallyDiscretisedSystem_Unmodified
 
+=======
+>>>>>>> 2a4c056fe7870a93e085c154ae63e541b6ea3e25
         # Helper variables
         self.SolvedB = False  # Indicate that solver hasn't been Run
 
@@ -131,11 +141,20 @@ class fullModelSolver():
         self.S, self.TA, self.TM, self.A, self.M = [self.solverObj.y[k * self.nGrdPts:(k + 1) * self.nGrdPts] for k in
                                                     range(5)]
 
+<<<<<<< HEAD
     # ============================================================
     # By discretising in space we can derive the following ODE system, which we solve
     # in time using a RK scheme. The ODEs for the different componenents (S,TA,TM,A,M)
     # are arranged in one long vector in that order.
     def SpatiallyDiscretisedSystem_Unmodified(self, t, uVec):
+=======
+        # ============================================================
+
+    # By discretising in space we can derive the following ODE system, which we solve
+    # in time using a RK scheme. The ODEs for the different componenents (S,TA,TM,A,M)
+    # are arranged in one long vector in that order.
+    def SpatiallyDiscretisedSystem(self, t, uVec):
+>>>>>>> 2a4c056fe7870a93e085c154ae63e541b6ea3e25
         currSVec, currTAVec, currTMVec, currAVec, currMVec = [uVec[k * self.nGrdPts:(k + 1) * self.nGrdPts] for k in
                                                               range(5)]
         # Spatial ODEs for the stroma, S
@@ -143,6 +162,7 @@ class fullModelSolver():
         # ODEs from spatially discretised PDE for TA
         dudtVec_TA = self.f_tumourA(currSVec, currTAVec, currTMVec) + self.InhomogeneousDiffusionOperator(currTAVec,
                                                                                                           self.DT * (
+<<<<<<< HEAD
                                                                                                                   1 - currMVec / (
                                                                                                                   1 + self.eps))) # Note: For simulations in the paper eps=0
         # ODEs from spatially discretised PDE for TM
@@ -150,6 +170,15 @@ class fullModelSolver():
                                                                                                           self.DT * (
                                                                                                                   1 - currMVec / (
                                                                                                                   1 + self.eps))) # Note: For simulations in the paper eps=0
+=======
+                                                                                                                      1 - currMVec / (
+                                                                                                                          1 + self.eps)))
+        # ODEs from spatially discretised PDE for TM
+        dudtVec_TM = self.f_tumourM(currSVec, currTAVec, currTMVec) + self.InhomogeneousDiffusionOperator(currTMVec,
+                                                                                                          self.DT * (
+                                                                                                                      1 - currMVec / (
+                                                                                                                          1 + self.eps)))
+>>>>>>> 2a4c056fe7870a93e085c154ae63e541b6ea3e25
         # ODEs from spatially discretised PDE for A
         dudtVec_A = self.f_acid(currTAVec, currAVec) + self.InhomogeneousDiffusionOperator(currAVec,
                                                                                            np.ones_like(currAVec))
@@ -158,6 +187,7 @@ class fullModelSolver():
 
         return np.concatenate([dudtVec_S, dudtVec_TA, dudtVec_TM, dudtVec_A, dudtVec_M])
 
+<<<<<<< HEAD
     # -------------------------------------------------------------
     # To prevent spurious oscillations, here is a stabilised discretisation.
     def SpatiallyDiscretisedSystem_Stabilised(self, t, uVec):
@@ -187,6 +217,8 @@ class fullModelSolver():
         return np.concatenate([dudtVec_S, dudtVec_TA, dudtVec_TM, dudtVec_A, dudtVec_M])
 
 
+=======
+>>>>>>> 2a4c056fe7870a93e085c154ae63e541b6ea3e25
     # ============================================================
     # Source terms of the different equations
     # RHS of the stroma ODE
@@ -214,7 +246,11 @@ class fullModelSolver():
     def InhomogeneousDiffusionOperator(self, UVec, DVec):
         dudxVec = np.zeros_like(UVec)
         dudxVec[1:-1] = ((DVec[:-2] + DVec[1:-1]) * UVec[:-2] - (DVec[:-2] + 2 * DVec[1:-1] + DVec[2:]) * UVec[1:-1] + (
+<<<<<<< HEAD
                 DVec[1:-1] + DVec[2:]) * UVec[2:]) / (2 * self.dx ** 2)
+=======
+                    DVec[1:-1] + DVec[2:]) * UVec[2:]) / (2 * self.dx ** 2)
+>>>>>>> 2a4c056fe7870a93e085c154ae63e541b6ea3e25
         dudxVec[0] = ((DVec[1] + DVec[0]) * UVec[1] - (DVec[0] + DVec[1]) * UVec[0]) / self.dx ** 2
         dudxVec[-1] = ((DVec[-2] + DVec[-1]) * UVec[-2] - (DVec[-2] + DVec[-1]) * UVec[-1]) / self.dx ** 2
         return dudxVec
@@ -243,9 +279,15 @@ class fullModelSolver():
             plt.fill_between(self.xVec, np.zeros_like(self.TM[:, tIdx]), self.TM[:, tIdx],
                              color='#DDDA6D', lw=lineWidth, alpha=0.6, hatch='++',
                              label=r"$T_M$")
+<<<<<<< HEAD
             plt.xlabel(r"$x$")
             plt.ylabel("Non-Dimensionalised \n Variables")
             plt.title(r"Time $t$ = %1.2f" % self.loggedTimeVec[tIdx])
+=======
+            plt.xlabel("x")
+            plt.ylabel("Non-Dimensionalised \n Variables")
+            plt.title(r"Time t = %1.2f" % self.loggedTimeVec[tIdx])
+>>>>>>> 2a4c056fe7870a93e085c154ae63e541b6ea3e25
             plt.ylim(ylimVec)
             if pltIdx == 0:
                 legend = plt.legend(loc='upper right', shadow=False,
@@ -257,6 +299,7 @@ class fullModelSolver():
             if outName == None:
                 outName = "t_%1.2f_dt_%1.3f_dx_%1.3f.pdf" % (self.timesToPlotList[tIdx], self.dt, self.dx)
             plt.savefig(outName, orientation='portrait', format='pdf')
+<<<<<<< HEAD
             plt.close()
 
     # ============================================================
@@ -299,4 +342,6 @@ class fullModelSolver():
             if outName == None:
                 outName = "diagnosticPlot.png"
             plt.savefig(outName, orientation='portrait', format='png')
+=======
+>>>>>>> 2a4c056fe7870a93e085c154ae63e541b6ea3e25
             plt.close()
